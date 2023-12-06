@@ -1,0 +1,185 @@
+<!-- home.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .login-button {
+        background-color: #3498db;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .login-button:hover {
+        background-color: #2980b9;
+      }
+
+      a {
+        color: #3498db;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .search-bar {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      #eventSearch {
+        margin-right: 10px;
+      }
+
+      #eventTypeFilter {
+        margin-right: 10px;
+      }
+
+      .logo-container {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+      }
+
+      .logo {
+        width: 50px; /* Adjust the size as needed */
+        cursor: pointer;
+      }
+
+      .coupon-card {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+      }
+
+      .coupon-code {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      .redeem-button {
+        background-color: #3498db;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .redeem-button:hover {
+        background-color: #2980b9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Welcome, {{ user['email'] }}!</h2>
+      <p>Login Type: {{ user['type'] }}</p>
+      <p>This is the home page.</p>
+      <a href="{{ url_for('index') }}">Logout</a>
+
+      <!-- Search and Filter Elements -->
+      <div class="search-bar">
+        <input type="text" id="eventSearch" placeholder="Search events..." />
+        <select id="eventTypeFilter">
+          <option value="all">All Events</option>
+          <option value="public">Public Events</option>
+          <option value="private">Private Events</option>
+        </select>
+        <button onclick="filterEvents()">Filter</button>
+      </div>
+
+      <!-- Logos with links -->
+      <div class="logo-container">
+        <a href="https://www.facebook.com" target="_blank">
+          <img
+            class="logo"
+            src="path/to/facebook-logo.png"
+            alt="Facebook Logo"
+          />
+        </a>
+        <a href="https://mail.google.com" target="_blank">
+          <img class="logo" src="path/to/gmail-logo.png" alt="Gmail Logo" />
+        </a>
+      </div>
+
+      <!-- Coupon Card -->
+      <div class="coupon-card">
+        <p class="coupon-code">Coupon Code: ABC123</p>
+        <p>
+          This coupon code provides a discount on your next purchase. Redeem it
+          now!
+        </p>
+        <button class="redeem-button" onclick="redeemCoupon()">
+          Redeem Coupon
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // JavaScript function for filtering events
+      function filterEvents() {
+        var searchTerm = document
+          .getElementById("eventSearch")
+          .value.toLowerCase();
+        var eventTypeFilter = document.getElementById("eventTypeFilter").value;
+
+        var eventCards = document.querySelectorAll(".event-card");
+
+        eventCards.forEach(function (card) {
+          var eventType = card.getAttribute("data-type");
+          var eventName = card.querySelector("h3").innerText.toLowerCase();
+
+          var isMatch = eventName.includes(searchTerm);
+
+          if (eventTypeFilter !== "all") {
+            isMatch = isMatch && eventType === eventTypeFilter;
+          }
+
+          if (isMatch) {
+            card.style.display = "block";
+          } else {
+            card.style.display = "none";
+          }
+        });
+      }
+
+      // JavaScript function for redeeming the coupon
+      function redeemCoupon() {
+        // Add your logic here for redeeming the coupon
+        alert("Coupon Redeemed!"); // Replace this with actual logic
+      }
+    </script>
+  </body>
+</html>
