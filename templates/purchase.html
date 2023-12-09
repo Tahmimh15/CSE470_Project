@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Purchase Tickets</title>
+  <!-- Bootstrap CSS link -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body{
+      background-color: azure;
+    }
+    /* Custom CSS for form */
+    .form-group label {
+      margin-bottom: 2px;
+      
+    }
+
+    #totalBillBox {
+      border: 2px solid #3498db;
+      padding: 15px;
+      border-radius: 5px;
+      background-color: #f0f8ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-6">
+        <h1 class="text-center mb-4">Purchase Tickets</h1>
+        <form method="POST" action="{{ url_for('purchase_tickets') }}">
+          <div class="form-group">
+            <label for="user_name" class="font-weight-bold">Your Name:</label>
+            <input type="text" class="form-control" id="user_name" name="user_name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="user_email" class="font-weight-bold">Your Email:</label>
+            <input type="email" class="form-control" id="user_email" name="user_email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="event_name" class="font-weight-bold">Event Name:</label>
+            <input type="text" class="form-control" id="event_name" name="event_name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="seating_position" class="font-weight-bold">Seating Position:</label>
+            <input type="text" class="form-control" id="seating_position" name="seating_position" required>
+          </div>
+
+          <div class="form-group">
+            <label for="number_of_tickets" class="font-weight-bold">Number of Tickets:</label>
+            <input type="number" class="form-control" id="number_of_tickets" name="number_of_tickets" required>
+          </div>
+
+          <div class="form-group">
+            <label for="price" class="font-weight-bold">Ticket Price:</label>
+            <select class="form-control" id="price" name="price" required>
+              <option value="200">$200</option>
+              <option value="300">$300</option>
+              <option value="400">$400</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block mt-4">Purchase Tickets</button>
+        </form>
+
+        <!-- Total bill section -->
+        <div class="mt-4" id="totalBillBox">
+          <h4 class="text-center">Total Bill</h4>
+          <p class="text-center" id="totalBill">Calculate the total bill</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and jQuery links (if needed) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    // JavaScript to calculate the total bill based on the selected number of tickets and price
+    document.getElementById('number_of_tickets').addEventListener('input', function() {
+      calculateBill();
+    });
+
+    document.getElementById('price').addEventListener('change', function() {
+      calculateBill();
+    });
+
+    function calculateBill() {
+      const tickets = parseInt(document.getElementById('number_of_tickets').value);
+      const price = parseInt(document.getElementById('price').value);
+      const total = tickets * price;
+
+      document.getElementById('totalBill').textContent = `Total Bill: $${total}`;
+    }
+  </script>
+</body>
+</html>

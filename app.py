@@ -3,9 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms.validators import InputRequired, Length, Email, EqualTo, ValidationError
 
 
-app = Flask(__name__)
+
+app = Flask("Nimontron", static_url_path="/static")
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/project'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -61,28 +65,69 @@ def premium_required(func):
         return func(*args, **kwargs)
     return decorated_function
 
-@app.route('/')
+
+class UserLoginForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=4,max=20)], render_kw={"placeholder": "Username"})
+    password_hash = PasswordField('Password', validators=[InputRequired(),Length(min=4,max=20)], render_kw={"placeholder": "Password"})
+    submit = SubmitField('Login')
+
+
+
+@app.route('/homepage')
 @login_required
 def home():
     user_events = Event.query.filter_by(user_id=current_user.id).all()
     return render_template('home.html', user=current_user, user_events=user_events)
 
 @app.route('/login', methods=['GET', 'POST'])
+
 def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-
-        user = User.query.filter_by(email=email).first()
-
-        if user and user.check_password(password):
-            login_user(user)
-            flash('Login successful!', 'success')
-            return redirect(url_for('home'))
+    form = UserLoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user:
+            if check_password_hash(user.password_hash, form.password.data):
+                login_user(user)
+                flash('Login successful!', 'success')
+                return redirect(url_for('home'))
+            else:
+                flash('Invalid login credentials', 'danger')
         else:
             flash('Invalid login credentials', 'danger')
+    return render_template('login.html', form=form)
 
-    return render_template('login.html')
+
+# def login():
+#     if request.method == 'POST':
+#         email = request.form['email']
+#         password = request.form['password']
+
+#         user = User.query.filter_by(email=email).first()
+
+#         if user and user.check_password(password):
+#             login_user(user)
+#             flash('Login successful!', 'success')
+#             return redirect(url_for('home'))
+#         else:
+#             flash('Invalid login credentials', 'danger')
+
+#     return render_template('login.html')
+
+@app.route('/')
+def index():
+    return render_template("index.html")
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+@app.route("/gallery")
+def gallery():
+    return render_template("gallery.html")
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
 
 @app.route('/logout')
 @login_required
