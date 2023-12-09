@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <h2>Welcome to the Home Page</h2>
+    
+    {% if 'username' in session %}
+        <p>Logged in as {{ user.fname }} with role: {{ user.role }}</p>
+
+        {% if user.role == 'Premium' %}
+        <p><a href="/change_role">Become Free</a></p>
+        <p><a href="/create_event">Create Events</a></p>
+            
+            {% if user_events %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in user_events %}
+                        <tr>
+                            <td>{{ event.event_name }}</td>
+                            <td>{{ event.location }}</td>
+                            <td>{{ event.description }}</td>
+                            <td class="actions">
+                                <a href="{{ url_for('edit_event', event_id=event.id) }}" class="action-btn">Edit</a>
+                                <a href="{{ url_for('delete_event', event_id=event.id) }}" class="action-btn">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No events made yet, add one from <a href="/create_event">here</a></p>
+
+            {% endif %}
+
+        {% else %}
+        <p><a href="/change_role">Become Premium</a></p>
+
+        {% endif %}
+
+
+        <p><a href="/view_events">View Events</a></p>
+        <p><a href="/logout">Logout</a></p>
+    {% else %}
+        <p>You are not logged in</p>
+        <p><a href="/login">Login</a></p>
+    {% endif %}
+
+
+</body>
+</html>
