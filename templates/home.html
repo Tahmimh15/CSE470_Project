@@ -9,8 +9,8 @@
 <body>
     <h2>Welcome to the Home Page</h2>
     
-    {% if 'username' in session %}
-        <p>Logged in as {{ user.fname }} with role: {{ user.role }}</p>
+    {% if current_user.is_authenticated %}
+        <p>Logged in as {{ current_user.fname }} with role: {{ current_user.role }}</p>
 
         {% if user.role == 'Premium' %}
         <p><a href="/change_role">Become Free</a></p>
