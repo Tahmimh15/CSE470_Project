@@ -49,6 +49,15 @@ class Event(db.Model):
     description = db.Column(db.String(255), nullable=False)
     privacy =  db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    invitations = db.relationship('Invitation', back_populates='event')
+
+
+class Invitation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    event = db.relationship('Event', back_populates='invitations')
+    user = db.relationship('User')
 
 
 # Run this once to create the database
