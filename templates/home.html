@@ -1,185 +1,62 @@
-<!-- home.html -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home Page</title>
-    <style>
-      body {
-        font-family: "Arial", sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-      }
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <h2>Welcome to the Home Page</h2>
+    
+    {% if current_user.is_authenticated %}
+        <p>Logged in as {{ current_user.fname }} with role: {{ current_user.role }}</p>
 
-      .container {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        max-width: 400px;
-        width: 100%;
-        text-align: center;
-      }
+        {% if user.role == 'Premium' %}
+        <p><a href="/change_role">Become Free</a></p>
+        <p><a href="/create_event">Create Events</a></p>
+            
+            {% if user_events %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in user_events %}
+                        <tr>
+                            <td>{{ event.event_name }}</td>
+                            <td>{{ event.location }}</td>
+                            <td>{{ event.description }}</td>
+                            <td class="actions">
+                                <a href="{{ url_for('edit_event', event_id=event.id) }}" class="action-btn">Edit</a>
+                                <a href="{{ url_for('delete_event', event_id=event.id) }}" class="action-btn">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No events made yet, add one from <a href="/create_event">here</a></p>
 
-      .login-button {
-        background-color: #3498db;
-        color: #fff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
+            {% endif %}
 
-      .login-button:hover {
-        background-color: #2980b9;
-      }
+        {% else %}
+        <p><a href="/change_role">Become Premium</a></p>
 
-      a {
-        color: #3498db;
-        text-decoration: none;
-      }
+        {% endif %}
 
-      a:hover {
-        text-decoration: underline;
-      }
 
-      .search-bar {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
+        <p><a href="/view_events">View Events</a></p>
+        <p><a href="/logout">Logout</a></p>
+    {% else %}
+        <p>You are not logged in</p>
+        <p><a href="/login">Login</a></p>
+    {% endif %}
 
-      #eventSearch {
-        margin-right: 10px;
-      }
 
-      #eventTypeFilter {
-        margin-right: 10px;
-      }
-
-      .logo-container {
-        margin-top: 20px;
-        display: flex;
-        justify-content: space-around;
-      }
-
-      .logo {
-        width: 50px; /* Adjust the size as needed */
-        cursor: pointer;
-      }
-
-      .coupon-card {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        margin-top: 20px;
-      }
-
-      .coupon-code {
-        font-size: 24px;
-        margin-bottom: 10px;
-      }
-
-      .redeem-button {
-        background-color: #3498db;
-        color: #fff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-
-      .redeem-button:hover {
-        background-color: #2980b9;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h2>Welcome, {{ user['email'] }}!</h2>
-      <p>Login Type: {{ user['type'] }}</p>
-      <p>This is the home page.</p>
-      <a href="{{ url_for('index') }}">Logout</a>
-
-      <!-- Search and Filter Elements -->
-      <div class="search-bar">
-        <input type="text" id="eventSearch" placeholder="Search events..." />
-        <select id="eventTypeFilter">
-          <option value="all">All Events</option>
-          <option value="public">Public Events</option>
-          <option value="private">Private Events</option>
-        </select>
-        <button onclick="filterEvents()">Filter</button>
-      </div>
-
-      <!-- Logos with links -->
-      <div class="logo-container">
-        <a href="https://www.facebook.com" target="_blank">
-          <img
-            class="logo"
-            src="path/to/facebook-logo.png"
-            alt="Facebook Logo"
-          />
-        </a>
-        <a href="https://mail.google.com" target="_blank">
-          <img class="logo" src="path/to/gmail-logo.png" alt="Gmail Logo" />
-        </a>
-      </div>
-
-      <!-- Coupon Card -->
-      <div class="coupon-card">
-        <p class="coupon-code">Coupon Code: ABC123</p>
-        <p>
-          This coupon code provides a discount on your next purchase. Redeem it
-          now!
-        </p>
-        <button class="redeem-button" onclick="redeemCoupon()">
-          Redeem Coupon
-        </button>
-      </div>
-    </div>
-
-    <script>
-      // JavaScript function for filtering events
-      function filterEvents() {
-        var searchTerm = document
-          .getElementById("eventSearch")
-          .value.toLowerCase();
-        var eventTypeFilter = document.getElementById("eventTypeFilter").value;
-
-        var eventCards = document.querySelectorAll(".event-card");
-
-        eventCards.forEach(function (card) {
-          var eventType = card.getAttribute("data-type");
-          var eventName = card.querySelector("h3").innerText.toLowerCase();
-
-          var isMatch = eventName.includes(searchTerm);
-
-          if (eventTypeFilter !== "all") {
-            isMatch = isMatch && eventType === eventTypeFilter;
-          }
-
-          if (isMatch) {
-            card.style.display = "block";
-          } else {
-            card.style.display = "none";
-          }
-        });
-      }
-
-      // JavaScript function for redeeming the coupon
-      function redeemCoupon() {
-        // Add your logic here for redeeming the coupon
-        alert("Coupon Redeemed!"); // Replace this with actual logic
-      }
-    </script>
-  </body>
+</body>
 </html>

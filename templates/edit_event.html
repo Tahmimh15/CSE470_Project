@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Post</title>
+    <!-- Include any necessary styles or scripts here -->
+</head>
+<body>
+    <h2>Edit Event</h2>
+    <form method="post" action="{{ url_for('edit_event', event_id=event.id) }}">
+        <label for="event_name">Name:</label>
+        <input type="text" name="event_name" required>
+
+        <label for="location">Location:</label>
+        <input type="text" name="location" required>
+        
+        <label for="description">Description:</label>
+        <textarea name="description" required></textarea>
+
+        <label for="privacy">Choose Privacy:</label>
+        <select name="privacy" required>
+            <option value="Public">Public</option>
+            <option value="Private">Private</option>
+        </select>
+        
+        <button type="submit">Update Event</button>
+    </form>
+
+    <br>
+    <a href="{{ url_for('home') }}">Back to Home</a>
+</body>
+</html>

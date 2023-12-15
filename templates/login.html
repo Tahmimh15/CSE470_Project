@@ -1,93 +1,106 @@
-<!-- login.html -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login Page</title>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <style>
-      /* login.html */
-      body {
-        font-family: "Arial", sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-      }
-
-      .container {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        max-width: 400px;
-        width: 100%;
-        text-align: center;
-      }
-
-      .input-group {
-        margin-bottom: 15px;
-        text-align: left;
-      }
-
-      .login-button {
-        background-color: #3498db;
-        color: #fff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-
-      .login-button:hover {
-        background-color: #2980b9;
-      }
-
-      a {
-        color: #3498db;
-        text-decoration: none;
-      }
-
-      a:hover {
-        text-decoration: underline;
-      }
-
-      .error {
-        color: #e74c3c;
-        margin-top: 10px;
-      }
+        body {
+            background: rgb(2,0,36);
+            background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(31,9,121,0.9557072829131653) 39%, rgba(0,212,255,1) 100%);
+        }
+        .highlight {
+            background-color: yellow;
+        }
     </style>
-  </head>
-  <body>
-    <div class="container">
-      <h2>Login</h2>
-      <form method="post" action="{{ url_for('login') }}">
-        <div class="input-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required />
-        </div>
+</head>
+<body class="container">
 
-        <div class="input-group">
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required />
-        </div>
+    <div class="hero_area">
+        <header class="header_section">
+          <div class="container">
+            <nav class="navbar navbar-expand-lg custom_nav-container ">
+              <a class="navbar-brand" href="index.html">
+                <span>
+                  Fior
+                </span>
+              </a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+    
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="d-flex mx-auto flex-column flex-lg-row align-items-center">
+                  <ul class="navbar-nav  ">
+                    <li class="nav-item active">
+                      <a class="nav-link" href="{{url_for('index')}}"> Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{url_for('about')}}"> About</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{url_for('gallery')}}"> Gallery </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{url_for('contact')}}"> Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{url_for('invite')}}"> Invite </a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="quote_btn-container ">
+                  <a href=" {{url_for('login')}}">
+                    Log in
+                  </a>
+                  <a href="">
+                    <img src="images/cart.png" alt="">
+                  </a>
+                  <form class="form-inline">
+                    <button class="btn  my-2 my-sm-0 nav_search-btn" type="submit"></button>
+                  </form>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </header>
+    
+    <h2 class="text-center mt-5" style="color: teal;">Login</h2>
+    <form method="POST" class="mt-4">
+      {{ form.hidden_tag() }}
 
-        <div class="input-group">
-          <label for="login-type">Login Type:</label>
-          <select name="login-type" id="login-type">
-            <option value="premium">Premium</option>
-            <option value="public">Public</option>
-          </select>
-        </div>
+      <div class="mb-3">
+          <label for="username" class="form-label">Username:</label>
+          <input type="text" name="username" id="username" class="form-control" required>
+      </div>
 
-        <button type="submit" class="login-button">Login</button>
-      </form>
-      <a href="{{ url_for('register') }}">Create an account</a>
-      <p>
-        Don't have an account? <a href="{{ url_for('register') }}">Register</a>
-      </p>
-    </div>
-  </body>
+      <div class="mb-3">
+          <label for="password" class="form-label">Password:</label>
+          <input type="password" name="password" id="password" class="form-control" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Login</button>
+  </form>
+  
+
+
+    <script>
+        document.getElementById("register-link").addEventListener("click", function() {
+            this.classList.toggle("highlight");
+        });
+    </script>
+    <p class="text-center mt-3" style="color: teal;"><a href="/register">Register</a></p>
+
+</body>
 </html>
+
