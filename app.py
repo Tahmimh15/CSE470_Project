@@ -22,19 +22,50 @@ migrate= Migrate(app, db)
 #Create Classes
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password_hash = db.Column(db.String(120), nullable=False)
-    fname = db.Column(db.String(255), nullable=False)
-    lname = db.Column(db.String(255), nullable=False)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(80), nullable=False)
+    fname = db.Column(db.String(80), nullable=False)
+    lname = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
     role = db.Column(db.String(255), default="Free", nullable=False)
     events = db.relationship('Event', backref='host', lazy=True)
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(255), unique=True, nullable=False)
+#     email = db.Column(db.String(255), unique=True, nullable=False)
+#     password_hash = db.Column(db.String(120), nullable=False)
+#     fname = db.Column(db.String(255), nullable=False)
+#     lname = db.Column(db.String(255), nullable=False)
+#     role = db.Column(db.String(255), default="Free", nullable=False)
+#     events = db.relationship('Event', backref='host', lazy=True)
+    def get_id(self):
+        return self.id
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+    def __repr__(self):
+        return f"User(id={self.id}, username='{self.username}')"
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+#     def set_password(self, password):
+#         self.password_hash = generate_password_hash(password)
+
+#     def check_password(self, password):
+#         return check_password_hash(self.password_hash, password)
+
+
+# class User(db.Model, UserMixin):
+#     __tablename__ = 'user2'
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(80), unique=True, nullable=False)
+#     password = db.Column(db.String(80), nullable=False)
+#     fname = db.Column(db.String(80), nullable=False)
+#     lname = db.Column(db.String(80), nullable=False)
+#     email = db.Column(db.String(120), unique=True, nullable=False)
+#     role = db.Column(db.String(255), default="Free", nullable=False)
+#     events = db.relationship('Event', backref='host', lazy=True)
+
+#     def get_id(self):
+#         return self.id
+
+#     def __repr__(self):
+#         return f"User2(id={self.id}, username='{self.username}')"
 
 
 @app.route("/invite", methods=['GET', 'POST'])
@@ -82,7 +113,7 @@ def premium_required(func):
 
 
 class UserLoginForm(FlaskForm):
-    email = StringField('Email', validators=[InputRequired(), Length(min=4,max=20)], render_kw={"placeholder": "Email"})
+    username = StringField('Username', validators=[InputRequired(), Length(min=4,max=20)], render_kw={"placeholder": "Username"})
     password = PasswordField('Password', validators=[InputRequired(),Length(min=4,max=20)], render_kw={"placeholder": "Password"})
     submit = SubmitField('Login')
 
@@ -94,7 +125,7 @@ def home():
     user_events = Event.query.filter_by(user_id=current_user.id).all()
     return render_template('home.html', user=current_user, user_events=user_events)
 
-@app.route('/login', methods=['GET', 'POST'])
+# @app.route('/login', methods=['GET', 'POST'])
 
 # def login():
 #     form = UserLoginForm()
@@ -132,27 +163,41 @@ def home():
 #from your_forms_file import UserLoginForm  # Import the form you've created
 
 
+# def login():
+#     form = UserLoginForm()
+
+#     if form.validate_on_submit():
+#         print("I am inside if condition.....")
+#         email = form.email.data
+#         password = form.password.data
+
+#         user = User.query.filter_by(email=email).first()
+
+#         if user and user.check_password(password):
+#             # Login successful logic
+#             login_user(user)  # This is the missing part
+#             flash('Login successful!', 'success')
+#             # Redirect to appropriate page after login
+#             return redirect(url_for('index'))
+#         else:
+#             flash('Invalid login credentials', 'danger')
+
+#     return render_template('login.html', form=form)
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = UserLoginForm()
-
     if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
+        instructor = User.query.filter_by(username=form.username.data).first()
 
-        user = User.query.filter_by(email=email).first()
-
-        if user and user.check_password(password):
-            # Login successful logic
-            login_user(user)  # This is the missing part
+        if instructor and form.password.data == instructor.password:
+            login_user(instructor)  # Log in the instructor
             flash('Login successful!', 'success')
-            # Redirect to appropriate page after login
-            return redirect(url_for('index'))
-        else:
-            flash('Invalid login credentials', 'danger')
+            return redirect(url_for('home'))
+
+        flash('Login failed. Please check your credentials.', 'danger')
 
     return render_template('login.html', form=form)
-
-
 
 @app.route('/')
 def index():
@@ -177,28 +222,55 @@ def logout():
     flash('Logout successful!', 'success')
     return redirect(url_for('login'))
 
-@app.route('/register', methods=['GET', 'POST'])
+# @app.route('/register', methods=['GET', 'POST'])
+# def register():
+#     if request.method == 'POST':
+#         fname = request.form['fname']
+#         lname = request.form['lname']
+#         username = request.form['username']
+#         email = request.form['email']
+#         password = request.form['password']
+
+#         existing_user = User.query.filter_by(username=username).first()
+
+#         if existing_user:
+#             flash('Username already exists', 'danger')
+#         else:
+#             new_user = User(email=email, username=username, fname=fname, lname=lname)
+#             new_user.set_password(password)
+#             db.session.add(new_user)
+#             db.session.commit()
+#             flash('Registration successful! Please log in.', 'success')
+#             return redirect(url_for('login'))
+
+#     return render_template('register.html')
+
+
+
+class User2RegistrationForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=4, max=20)],render_kw={"placeholder": "Username"})
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=4, max =20)],render_kw={"placeholder": "Password"})
+    fname = StringField('First Name', validators=[InputRequired()],render_kw={"placeholder": "First name"})
+    lname = StringField('Last Name', validators=[InputRequired()],render_kw={"placeholder": "Last name"})
+    email = StringField('Email', validators=[InputRequired(), Length(min=4, max =20)],render_kw={"placeholder": "Email"})
+    submit = SubmitField('Register')
+    
+    def validate_username(self, username):
+        existing_user_username = User.query.filter_by(username=username.data).first()
+        if existing_user_username:
+            raise ValidationError('This username already exists, choose a different username.') 
+        
+@app.route('/register', methods=['GET','POST'])
 def register():
-    if request.method == 'POST':
-        fname = request.form['fname']
-        lname = request.form['lname']
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-
-        existing_user = User.query.filter_by(username=username).first()
-
-        if existing_user:
-            flash('Username already exists', 'danger')
-        else:
-            new_user = User(email=email, username=username, fname=fname, lname=lname)
-            new_user.set_password(password)
-            db.session.add(new_user)
-            db.session.commit()
-            flash('Registration successful! Please log in.', 'success')
-            return redirect(url_for('login'))
-
-    return render_template('register.html')
+    form = User2RegistrationForm()
+    if form.validate_on_submit():
+        new_instructor = User(username=form.username.data,password=form.password.data,email=form.email.data,fname=form.fname.data,lname=form.lname.data)
+        db.session.add(new_instructor)
+        db.session.commit()
+        #return render_template('instructor_login.html')
+        return redirect(url_for('login'))
+    
+    return render_template('register.html', form=form)
 
 @app.route('/change_role', methods=['GET'])
 @login_required
