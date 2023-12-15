@@ -36,6 +36,12 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+
+@app.route("/invite", methods=['GET', 'POST'])
+def invite():
+    registered_users= User.query.all()
+    return render_template("invite.html", registered_users=registered_users)
+
 class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_name = db.Column(db.String(255), unique=True, nullable=False)
@@ -67,8 +73,8 @@ def premium_required(func):
 
 
 class UserLoginForm(FlaskForm):
-    username = StringField('Username', validators=[InputRequired(), Length(min=4,max=20)], render_kw={"placeholder": "Username"})
-    password_hash = PasswordField('Password', validators=[InputRequired(),Length(min=4,max=20)], render_kw={"placeholder": "Password"})
+    email = StringField('Email', validators=[InputRequired(), Length(min=4,max=20)], render_kw={"placeholder": "Email"})
+    password = PasswordField('Password', validators=[InputRequired(),Length(min=4,max=20)], render_kw={"placeholder": "Password"})
     submit = SubmitField('Login')
 
 
@@ -81,20 +87,20 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 
-def login():
-    form = UserLoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user:
-            if check_password_hash(user.password_hash, form.password.data):
-                login_user(user)
-                flash('Login successful!', 'success')
-                return redirect(url_for('home'))
-            else:
-                flash('Invalid login credentials', 'danger')
-        else:
-            flash('Invalid login credentials', 'danger')
-    return render_template('login.html', form=form)
+# def login():
+#     form = UserLoginForm()
+#     if form.validate_on_submit():
+#         user = User.query.filter_by(username=form.username.data).first()
+#         if user:
+#             if check_password_hash(user.password_hash, form.password.data):
+#                 login_user(user)
+#                 flash('Login successful!', 'success')
+#                 return redirect(url_for('home'))
+#             else:
+#                 flash('Invalid login credentials', 'danger')
+#         else:
+#             flash('Invalid login credentials', 'danger')
+#     return render_template('login.html', form=form)
 
 
 # def login():
@@ -112,6 +118,32 @@ def login():
 #             flash('Invalid login credentials', 'danger')
 
 #     return render_template('login.html')
+
+
+#from your_forms_file import UserLoginForm  # Import the form you've created
+
+
+def login():
+    form = UserLoginForm()
+
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        user = User.query.filter_by(email=email).first()
+
+        if user and user.check_password(password):
+            # Login successful logic
+            login_user(user)  # This is the missing part
+            flash('Login successful!', 'success')
+            # Redirect to appropriate page after login
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid login credentials', 'danger')
+
+    return render_template('login.html', form=form)
+
+
 
 @app.route('/')
 def index():
