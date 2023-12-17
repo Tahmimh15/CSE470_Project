@@ -6,9 +6,7 @@ To use this project, first set up a virtual environment
 
 ## Set up virtual environment
 
-```
-python -m venv /path/to/directory
-
+```python -m venv /path/to/directory
 ```
 Use python3 for Unix/MacOS
 
@@ -28,14 +26,12 @@ Then, install all the required modules
 
 ## Requirements
 
-```
-pip install flask
+```pip install flask
 pip install flask-login
 pip install flask-migrate
 pip install flask-sqlalchemy
 pip install mysqlclient
 pip install mysql-connector-python
-
 ```
 
 use pip3 for Unix/MacOS
@@ -43,19 +39,15 @@ use pip3 for Unix/MacOS
 
 ## Migrate the databases
 
-```
-flask db init
+```flask db init
 flask db migrate
 flask db upgrade
-
 ```
 
 
 Clone the repository in the new env to run it
 
-```
-https://github.com/Tahmimh15/CSE470_Project.git
-
+```https://github.com/Tahmimh15/CSE470_Project.git
 ```
 
 Finally to use the project, run this in the terminal
@@ -63,7 +55,5 @@ Finally to use the project, run this in the terminal
 
 ## Run
 
-```
-flask run
-
+```flask run
 ```
