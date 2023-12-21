@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmation</title>
+  <!-- Bootstrap CSS link -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <style>
+    body{
+      background-color: azure;
+    }
+  </style>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center">
+        <h1 class="mb-4">Purchase Confirmed!</h1>
+        <p>Your tickets have been successfully purchased. Thank you!</p>
+        <!-- View Receipt button -->
+        <button onclick="generateReceipt()" class="btn btn-primary mt-3">View Receipt</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="receiptContent" style="display: none;">
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <h2 class="text-center mb-4">Receipt Details</h2>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>User Name</th>
+                <th>Event Name</th>
+                <th>Seating Position</th>
+                <th>Price</th>
+
+              </tr>
+            </thead>
+            <tbody id="receiptTableBody">
+              <!-- Ticket details will be added here -->
+            </tbody>
+          </table>
+          <button onclick="downloadReceipt()" class="btn btn-primary btn-block">Download Receipt as PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and jQuery links (if needed) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Replace the JavaScript section in your confirmation.html file with this code -->
+<script>
+    // Function to display the receipt using the passed ticket details
+    function generateReceipt() {
+    const receiptContent = document.getElementById('receiptContent');
+    const receiptTableBody = document.getElementById('receiptTableBody');
+    receiptTableBody.innerHTML = '';
+
+    const ticket = {{ ticket | tojson | safe }}; // Remove the |tojson filter
+
+    const row = `<tr>
+      <td>${ticket.ticket_id}</td>
+      <td>${ticket.username}</td>
+      <td>${ticket.event_name}</td>
+      <td>${ticket.seating_position}</td>
+      <td>$${ticket.price}</td>
+    </tr>`;
+    receiptTableBody.innerHTML += row;
+
+    receiptContent.style.display = 'block';
+  }
+
+  // Rest of your JavaScript remains unchanged...
+
+  
+    // Function to download the receipt as PDF remains the same
+    function downloadReceipt() {
+      const receiptContent = document.getElementById('receiptContent');
+      const filename = 'receipt.pdf';
+  
+      html2pdf().from(receiptContent).set({ exclude: '.exclude' }).save(filename);
+    }
+  </script>
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+</body>
+</html>

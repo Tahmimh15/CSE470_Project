@@ -1,15 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.3/assets/owl.carousel.min.css" />
+
+    <!-- bootstrap core css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+  
+    <!-- fonts style -->
+    <link href="https://fonts.googleapis.com/css?family=Baloo+Chettan|Poppins:400,600,700&display=swap" rel="stylesheet">
+    <!-- Custom styles for this template -->
+  
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- responsive style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: teal;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <h2>Welcome to the Home Page</h2>
-    
-    {% if current_user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Nimontron</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{{url_for('index')}}"> Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{url_for('about')}}"> About</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('gallery')}}"> Gallery </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('contact')}}"> Contact Us</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('invite')}}"> Invite </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('logout')}}"> Logout </a>
+          </ul>
+          <form method="post" action="{{ url_for('search_event') }}" class="form-inline justify-content-center mt-3">
+            <label for="search_query" class="mr-2">Search Events:</label>
+            <input type="text" name="search_query" id="search_query" placeholder="Enter search query" class="form-control mr-2">
+            <button type="submit" class="btn btn-light">Search</button>
+        </form>
+        </div>
+      </nav>
+      
+
+    <div class="container text-center py-5">
+        <h2>Welcome to the Home Page</h2>
+        <a href="{{url_for('ticket')}}" target="_blank" class="btn btn-light mt-3">Register a ticket</a>
+        <a href="{{ url_for('switch_role') }}" class="btn btn-light mt-3">Switch Role</a>
+
+        {% if current_user.is_authenticated %}
         <p>Logged in as {{ current_user.fname }} with role: {{ current_user.role }}</p>
 
         {% if user.role == 'Premium' %}
@@ -17,12 +77,13 @@
         <p><a href="/create_event">Create Events</a></p>
             
             {% if user_events %}
-            <table>
+            <table class="table table-dark mt-3">
                 <thead>
                     <tr>
                         <th>Title</th>
+                        <th>Location</th>
                         <th>Description</th>
-                        <th>Date</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,8 +93,8 @@
                             <td>{{ event.location }}</td>
                             <td>{{ event.description }}</td>
                             <td class="actions">
-                                <a href="{{ url_for('edit_event', event_id=event.id) }}" class="action-btn">Edit</a>
-                                <a href="{{ url_for('delete_event', event_id=event.id) }}" class="action-btn">Delete</a>
+                                <a href="{{ url_for('edit_event', event_id=event.id) }}" class="btn btn-primary">Edit</a>
+                                <a href="{{ url_for('delete_event', event_id=event.id) }}" class="btn btn-danger">Delete</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -48,15 +109,11 @@
         <p><a href="/change_role">Become Premium</a></p>
 
         {% endif %}
+        {% endif %}
+    </div>
 
 
-        <p><a href="/view_events">View Events</a></p>
-        <p><a href="/logout">Logout</a></p>
-    {% else %}
-        <p>You are not logged in</p>
-        <p><a href="/login">Login</a></p>
-    {% endif %}
-
-
+    <!-- Include Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>

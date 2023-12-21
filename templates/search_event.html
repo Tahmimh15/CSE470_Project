@@ -4,38 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Searched Events</title>
-    <!-- Include any necessary styles or scripts here -->
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: teal;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <h2>Events</h2>
-    <form method="post" action="{{ url_for('search_event') }}">
-        <label for="search_query">Search Events:</label>
-        <input type="text" name="search_query" placeholder="Enter search query">
-        <button type="submit">Search</button>
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for event in searched_events %}
-                <tr>
-                    <td>{{ event.event_name }}</td>
-                    <td>{{ event.location }}</td>
-                    <td>{{ event.description }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="container text-center py-5">
+        <h2>Events</h2>
+        <form method="post" action="{{ url_for('search_event') }}" class="form-inline justify-content-center mt-3">
+            <label for="search_query" class="mr-2">Search Events:</label>
+            <input type="text" name="search_query" placeholder="Enter search query" class="form-control mr-2">
+            <button type="submit" class="btn btn-light">Search</button>
+        </form>
 
-    <br>
-    <a href="{{ url_for('events') }}">All Events</a>
+            <table class="table table-dark mt-3">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in searched_events %}
+                    <tr>
+                        <td>{{ event.event_name }}</td>
+                        <td>{{ event.description }}</td>
 
-    <br>
-    <a href="{{ url_for('home') }}">Back to Home</a>
+                        <td>{{ event.location }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <!-- ... Rest of your HTML code ... -->
+            </div>
+    <!-- Include Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>
