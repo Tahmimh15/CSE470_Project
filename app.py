@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField
 from wtforms.validators import InputRequired, Length, Email, EqualTo, ValidationError
+from datetime import datetime
 
 
 
@@ -29,6 +30,8 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     role = db.Column(db.String(255), default="Free", nullable=False)
     events = db.relationship('Event', backref='host', lazy=True)
+
+
 #     id = db.Column(db.Integer, primary_key=True)
 #     username = db.Column(db.String(255), unique=True, nullable=False)
 #     email = db.Column(db.String(255), unique=True, nullable=False)
@@ -119,7 +122,7 @@ class UserLoginForm(FlaskForm):
 
 
 
-@app.route('/homepage')
+@app.route('/home')
 @login_required
 def home():
     user_events = Event.query.filter_by(user_id=current_user.id).all()
@@ -358,16 +361,123 @@ def search_event():
         search_query = request.form.get('search_query', '')
 
         searched_events = Event.query.filter(
+        Event.privacy.ilike("Public") &(
         Event.event_name.ilike(f"%{search_query}%") |
         Event.description.ilike(f"%{search_query}%") |
         Event.location.ilike(f"%{search_query}%")
-        ).all()
+        )).all()
 
         return render_template('search_event.html', searched_events = searched_events)
     
     else:
         flash('Only Premium users can access this!', 'danger')
         return redirect(url_for('events'))
+
+
+class Ticket(db.Model):
+    ticket_id= db.Column(db.Integer, primary_key= True)
+    username= db.Column(db.String(50), nullable= False)
+    event_name = db.Column(db.String(100), nullable=False)
+    seating_position= db.Column(db.String(10), nullable=False)
+    price= db.Column(db.Integer, nullable= False)
+    user_email= db.Column(db.String(150), nullable= False)
+    event_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+@app.route('/ticket_details')
+def view_ticketinfo():
+    return render_template("ticket_details.html")
+
+@app.route('/ticket', methods=['GET', 'POST'])
+def ticket():
+
+    if request.method == 'POST':
+        username = request.form['username']
+        event_name = request.form['event_name']
+        seating_position = request.form['seating_position']
+        price = request.form['price']
+        user_email = request.form['user_email']
+        new_ticket = Ticket(username=username, event_name=event_name, seating_position=seating_position, price=price, user_email= user_email)
+        db.session.add(new_ticket)
+        db.session.commit()
+        ticket_id = new_ticket.ticket_id
+        flash('Ticket booking successful!', 'success')
+        return redirect(url_for('ticket_confirmation', ticket_id=ticket_id))
+    return render_template("ticket.html")
+
+
+# @app.route('/buy_ticket/<int:event_id>', methods=['GET', 'POST'])
+# @login_required
+# def buy_ticket(event_id):
+#     event = Event.query.get_or_404(event_id)
+    
+#     if request.method == 'POST':
+#         # Fetch seat number, price, and other necessary details from the form
+#         seat_number = request.form['seat_number']
+#         price = float(request.form['price'])  # Adjust type conversion as needed
+
+#         # Fetch the buyer's wallet and the event creator's wallet
+#         buyer_wallet = current_user.wallet
+#         event_creator_wallet = event.host.wallet
+
+#         if buyer_wallet.balance >= price:  # Check if the buyer has enough balance
+#             # Deduct the ticket price from the buyer's wallet
+#             buyer_wallet.balance -= price
+#             # Add the ticket price to the event creator's wallet
+#             event_creator_wallet.balance += price
+
+#             # Create a new ticket and associate it with the user and event
+#             new_ticket = Ticket(event_id=event_id, user_id=current_user.id, seat_number=seat_number, price=price, purchase_date=datetime.now())
+#             db.session.add(new_ticket)
+#             db.session.commit()
+
+#             flash('Ticket purchased successfully!', 'success')
+#             return redirect(url_for('home'))
+#         else:
+#             flash('Insufficient balance in your wallet!', 'danger')
+#             return redirect(url_for('buy_ticket', event_id=event_id))
+
+#     # Render a form for selecting seats or buying tickets
+#     return render_template('buy_ticket.html', event=event)
+
+@app.route('/confirmation/<int:ticket_id>', methods=['GET'])
+def ticket_confirmation(ticket_id):
+    # Fetch ticket details from the database based on ticket_id
+    ticket = Ticket.query.get(ticket_id)
+    if not ticket:
+        # Handle case where ticket with the given ID doesn't exist
+        return "Ticket not found", 404
+
+    # Convert ticket details to a dictionary
+    ticket_details = {
+        'ticket_id': ticket.ticket_id,
+        'username': ticket.username,
+        'event_name': ticket.event_name,
+        'seating_position': ticket.seating_position,
+        'price': ticket.price,
+        # Include other attributes as needed
+    }
+
+    # Pass the ticket details dictionary to the confirmation page
+    return render_template('confirmation.html', ticket=ticket_details)
+
+
+class Seat(db.Model): #maisha
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    seat_number = db.Column(db.String(20), nullable=False)
+    seat_type = db.Column(db.String(20), nullable=False)  # 'Gold' or 'Standard'
+    price = db.Column(db.Float, nullable=False)
+
+    event = db.relationship('Event', backref='seats')
+
+class Wallet(db.Model): #maisha
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
+    balance = db.Column(db.Float, default=0.0)
+
+    user = db.relationship('User', backref='wallet', uselist=False)
+
+
 
 
 if __name__ == '__main__':

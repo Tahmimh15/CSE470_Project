@@ -5,38 +5,54 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: teal;
+            padding: 20px;
+        }
+        form {
+            margin: auto;
+            max-width: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Register</h2>
-    <form method="POST">
-        {{ form.hidden_tag() }}
+    <div class="container">
+        <h2 class="text-center text-white">Register</h2>
+        <form method="POST">
+            {{ form.hidden_tag() }}
 
-        <div class="form-group">
-            <label for="username">Username:</label>
-            {{ form.username(class="form-control") }}
-        </div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                {{ form.username(class="form-control") }}
+            </div>
 
-        <div class="form-group">
-            <label for="password">Password:</label>
-            {{ form.password(class="form-control") }}
-        </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                {{ form.password(class="form-control") }}
+            </div>
 
-        <div class="form-group">
-            <label for="fname">First Name:</label>
-            {{ form.fname(class="form-control") }}
-        </div>
+            <div class="form-group">
+                <label for="fname">First Name:</label>
+                {{ form.fname(class="form-control") }}
+            </div>
 
-        <div class="form-group">
-            <label for="lname">Last Name:</label>
-            {{ form.lname(class="form-control") }}
-        </div>
+            <div class="form-group">
+                <label for="lname">Last Name:</label>
+                {{ form.lname(class="form-control") }}
+            </div>
 
-        <div class="form-group">
-            <label for="email">Email:</label>
-            {{ form.email(class="form-control") }}
-        </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                {{ form.email(class="form-control") }}
+            </div>
 
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+        </form>
+    </div>
 </body>
 </html>
